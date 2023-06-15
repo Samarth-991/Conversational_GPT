@@ -22,3 +22,4 @@ EMBEDDING = configparser.get_vectorstore_attributes()['embedding']
 LOCAL_VECTOR_DIR = osp.join(BASE_PATH,configparser.get_vectorstore_attributes()['local_vectorstore_dir'])
 LOCAL_VECTOR_DB = osp.join(LOCAL_VECTOR_DIR,configparser.get_vectorstore_attributes()['vector_embedding_index'])
 
+STREAMLIT_PATH = configparser.get_streamlit_path()

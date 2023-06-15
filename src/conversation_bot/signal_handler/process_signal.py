@@ -19,13 +19,7 @@ class ConfigParser:
         data = dict(self.__config.items('audio'))
         return data
 
-    def get_text_attributes(self):
-        return dict(self.__config.items('text'))
-
-    def get_records(self):
-        return dict(self.__config.items('record'))
+    def get_streamlit_path(self):
+        return dict(self.__config.items('APP'))['streamlit_path']
 
 
-if __name__ == '__main__':
-    parser = ConfigParser("/mnt/e/Personal/Samarth/repository/DMAC_ChatGPT/conf/conf.cnf")
-    print(parser.get_vector_store_attributes())
