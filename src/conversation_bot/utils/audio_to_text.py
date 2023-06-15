@@ -4,6 +4,11 @@ import torch as th
 import whisper
 from whisper.audio import SAMPLE_RATE
 import logging
+import json
+
+from langchain import PromptTemplate
+from langchain.chat_models import ChatOpenAI
+from langchain.chains import LLMChain
 
 
 class AudioProcess:
@@ -13,16 +18,32 @@ class AudioProcess:
             logging.warning('Cuda Not available, using Device as CPU')
             self.device = 'cpu'
         self.model = whisper.load_model(model_name, device=self.device)  # in config
+        print("{} whisper model loaded ".format(model_name))
 
-    def get_language(self, audio, duration=30):
+    def get_info(self, audio, duration=30):
         clip_audio = whisper.pad_or_trim(audio, length=SAMPLE_RATE * duration)
         result = self.model.transcribe(clip_audio)
-        return result['language']
+        info = self.get_conversation_info(result['text'])
+        return result['language'],info
+
+    def get_conversation_info(self, text_data):
+        summary_template = """
+                    Given the conversation {information} between two persons identify the Customer name and 
+                    relationship manager name. Usually relationship manager asks customer if he is looking for
+                    services or property and customer replies either yes or no.
+                    answer in json format with keys customer_name and representative_name.
+                    """
+        summary_prompt_template = PromptTemplate(template=summary_template, input_variables=["information"])
+        llm = ChatOpenAI(temperature=1, model_name="gpt-3.5-turbo")
+
+        chain = LLMChain(llm=llm, prompt=summary_prompt_template)
+        answer = chain.run(information=text_data)
+        return json.loads(answer)
 
     def speech_to_text(self, audio_path):
         try:
             audio = whisper.load_audio(audio_path)
-            audio_language = self.get_language(audio)
+            audio_language, conv_info = self.get_info(audio)
             if audio_language == 'en':
                 res = self.model.transcribe(audio)
             else:
@@ -30,9 +51,9 @@ class AudioProcess:
                 res['text'] = self.translate_text(res['text'], orginal_text=audio_language, convert_to='English')
             audio_duration = audio.shape[0] / SAMPLE_RATE
         except IOError as err:
-            logging.error("IO error processing {}".format(audio_path,err))
-            return '',0.0
-        return res['text'], audio_duration
+            logging.error("IO error processing {}".format(audio_path, err))
+            return '', 0.0
+        return res['text'], audio_duration, audio_language, conv_info
 
     @retry(wait=wait_random(min=5, max=10))
     def translate_text(self, text, orginal_text='ar', convert_to='en'):

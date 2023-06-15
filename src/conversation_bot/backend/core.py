@@ -15,8 +15,8 @@ os.environ['OPENAI_API_KEY'] = "sk-bqOgfuRehdOpfQRBuPebT3BlbkFJemliU2FPoYIIf402f
 def create_prompt():
     prompt_template = """
     Analyze conversations between customer and sales person from context.
-    If customer is looking for services or property he can give us business else not interested. 
-    Use the context (delimited by <ctx></ctx>) and  chat history (delimited by <hs></hs>)to answer.
+    If customer is looking for services or property he is potential lead else not interested. 
+    Use the context (delimited by <ctx></ctx>) and  chat history (delimited by <hs></hs>)to answer with customer names.
     If you don't know the answer, just say No idea.
     <ctx>
     {context}
@@ -43,11 +43,11 @@ def run_llm(query: str, embedding_model='huggingface', vector_store='', chat_his
 
     qa = ConversationalRetrievalChain.from_llm(llm=chat,
                                                retriever=docsearch.as_retriever(),
-                                               combine_docs_chain_kwargs={"prompt": prompt}
+                                               combine_docs_chain_kwargs={"prompt": prompt},
                                                )
     return qa({"question": query, "chat_history": chat_history})
 
 
 if __name__ == '__main__':
     vector_path = "/mnt/e/Personal/Samarth/repository/DMAC_ChatGPT/data/faiss_dmac_conv"
-    print(run_llm(query="summarize conversations with Hari Kumar very shortly?", vector_store=vector_path))
+    run_llm(query="summarize conversations with Hari Kumar very shortly?", vector_store=vector_path)

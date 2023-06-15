@@ -18,12 +18,12 @@ pinecone.init(
 
 
 class IngestionToVectorDb:
-    def __init__(self, cnf_path, chunk_size=500, overlap=0, embedding='huggingface', out_path='vector_db'):
-        self.parser = Parser(cnf_path)
+    def __init__(self, config, chunk_size=500, overlap=0, embedding='huggingface', out_path='vector_db'):
+        self.parser = Parser(config)
         self.chunk_size = chunk_size
         self.overlap = overlap
         self.data_path = self.parser.get_records()['out_path']
-        self.outpath = self.parser.get_vectorstore_attributes()['local_vector_store']
+        self.vector_store = self.parser.get_vectorstore_attributes()['local_vector_store']
         self.word_embedder = self.parser.get_vectorstore_attributes()['embedding']
 
         if self.word_embedder == 'openai':
@@ -31,18 +31,18 @@ class IngestionToVectorDb:
             self.embeddings = OpenAIEmbeddings()
         else:
             self.embeddings = HuggingFaceEmbeddings()
-
         self.conversation_dict = dict()
         self.ingestion()
 
     def ingestion(self):
         docs = self.data_loader(tmp_path=self.data_path, chunk_size=self.chunk_size, overlap=self.overlap)
-        vectorstore = self.save_to_local_vectorstore(docs, embedding=self.embeddings)
-
-        vectorstore.save_local(self.outpath)
+        embedding_vector = self.save_to_local_vectorstore(docs, embedding=self.embeddings)
+        if embedding_vector:
+            embedding_vector.save_local(self.vector_store)
 
     @staticmethod
     def save_to_local_vectorstore(docs, embedding):
+        vectorstore = None
         try:
             from langchain.vectorstores import FAISS
             vectorstore = FAISS.from_documents(documents=docs, embedding=embedding)
@@ -51,10 +51,10 @@ class IngestionToVectorDb:
         return vectorstore
 
     @staticmethod
-    def data_loader(tmp_path='tmp.json', chunk_size=100, overlap=0):
+    def data_loader(tmp_path, chunk_size=100, overlap=0):
         def metadata_func(record: dict, metadata: dict) -> dict:
             metadata['customer'] = record.get('customer')
-            metadata['date'] = record.get('date')
+            metadata['language'] = record.get('date')
             metadata['duration'] = record.get('call duration')
             return metadata
 
@@ -79,6 +79,4 @@ class IngestionToVectorDb:
 
 if __name__ == '__main__':
     cnf_path = "/mnt/e/Personal/Samarth/repository/DMAC_ChatGPT/conf/conf.cnf"
-    IngestionToVectorDb(cnf_path=cnf_path)
-    # ingestion_process = IngestionToVectorDb(out_path=out_path)
-    # ingestion_process.ingestion(data_path=data_path, executive_name='Juraira Manzoor')
+    IngestionToVectorDb(config=cnf_path)
