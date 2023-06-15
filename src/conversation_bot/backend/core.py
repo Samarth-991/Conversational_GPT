@@ -31,7 +31,7 @@ def create_prompt():
     return prompt
 
 
-def run_llm(query: str, embedding_model='huggingface', vector_store='', chat_history: List[Dict[str, Any]] = []) -> Any:
+def run_llm(query: str, embedding_model='openai', vector_store='', chat_history: List[Dict[str, Any]] = []) -> Any:
     if embedding_model == 'openai':
         from langchain.embeddings.openai import OpenAIEmbeddings
         embeddings = OpenAIEmbeddings()

@@ -1,6 +1,6 @@
 [general]
-openapi_key = <give your open api key>
-base_path = <give base path to project folder>
+openapi_key =
+base_path = /Conversational_GPT
 audio_path = data/Audio
 document_output = data/Processed_data/audio_data.json
 
@@ -15,4 +15,8 @@ vector_embedding_index = faiss_damac_audio_data
 whisper_model = small
 translate = en
 device = cuda
+
+[APP]
+streamlit_path = <path to environment>/envs/pylangchain/bin/streamlit
+
 
