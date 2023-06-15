@@ -18,7 +18,7 @@ class AudioProcess:
             logging.warning('Cuda Not available, using Device as CPU')
             self.device = 'cpu'
         self.model = whisper.load_model(model_name, device=self.device)  # in config
-        print("{} whisper model loaded ".format(model_name))
+        print("{} whisper model loaded in {}".format(model_name,self.device))
 
     def get_info(self, audio, duration=30):
         clip_audio = whisper.pad_or_trim(audio, length=SAMPLE_RATE * duration)
@@ -31,7 +31,8 @@ class AudioProcess:
                     Given the conversation {information} between two persons identify the Customer name and 
                     relationship manager name. Usually relationship manager asks customer if he is looking for
                     services or property and customer replies either yes or no.
-                    answer in json format with keys customer_name and representative_name.
+                    Answer in JSON format with keys customer_name and representative_name only.If not sure mention ""
+                     
                     """
         summary_prompt_template = PromptTemplate(template=summary_template, input_variables=["information"])
         llm = ChatOpenAI(temperature=1, model_name="gpt-3.5-turbo")
@@ -43,16 +44,15 @@ class AudioProcess:
     def speech_to_text(self, audio_path):
         try:
             audio = whisper.load_audio(audio_path)
-            audio_language, conv_info = self.get_info(audio)
-            if audio_language == 'en':
-                res = self.model.transcribe(audio)
-            else:
-                res = self.model.transcribe(audio)
-                res['text'] = self.translate_text(res['text'], orginal_text=audio_language, convert_to='English')
-            audio_duration = audio.shape[0] / SAMPLE_RATE
-        except IOError as err:
-            logging.error("IO error processing {}".format(audio_path, err))
-            return '', 0.0
+        except:
+            raise "Issue in loading audio file. If path is correct try sudo apt-get install ffmpeg"
+        audio_language, conv_info = self.get_info(audio)
+        if audio_language == 'en':
+            res = self.model.transcribe(audio)
+        else:
+            res = self.model.transcribe(audio)
+            res['text'] = self.translate_text(res['text'], orginal_text=audio_language, convert_to='English')
+        audio_duration = audio.shape[0] / SAMPLE_RATE
         return res['text'], audio_duration, audio_language, conv_info
 
     @retry(wait=wait_random(min=5, max=10))
