@@ -1,2 +1,2 @@
 import os
-os.environ['OPENAI_API_KEY'] = "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"
+os.environ['OPENAI_API_KEY'] = "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"

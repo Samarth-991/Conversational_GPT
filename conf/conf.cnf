@@ -5,7 +5,7 @@ out_path = data
 [vector_store]
 vector_store = faiss
 embedding = openai
-local_vector_store = /mnt/e/Personal/Samarth/repository/DMAC_ChatGPT/data/faiss_damac_conversation
+local_vector_store = /mnt/e/Personal/Samarth/repository/DMAC_ChatGPT/data/Processed_data/faiss_damac_audio_data
 
 
 [audio]
@@ -15,12 +15,8 @@ device = cuda
 
 [record]
 file_path = /mnt/e/Personal/Samarth/repository/DMAC_ChatGPT/data/Data_Mortgage.xlsx
-out_path = /mnt/e/Personal/Samarth/repository/DMAC_ChatGPT/data/Processed_data/aymen_aydi.json
+out_path = /mnt/e/Personal/Samarth/repository/DMAC_ChatGPT/data/Processed_data/audio_data2.json
 audio_path_index = Ameyo Recording URL
-client_index = Assigned
-customer_index = Opportunity
-assignee_name = Aymen Aydi
-
 
 [text]
 chunk_size = 500

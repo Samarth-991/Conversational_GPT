@@ -1,46 +1,35 @@
-import streamlit as st
-from streamlit_chat import message
+import os
+import os.path as osp
+import logging
+from signal_handler.constant import AUDIO_FILES_DIR ,DOCUMENT_OUT_PATH,OPENAPI_KEY
+from data_orchestrator.data_processing import DataOrchestrator
+from document_ingestion.ingestion import IngestionToVectorDb
+from app import app
+import argparse
 
-from backend.core import run_llm
-from signal_handler.process_signal import ConfigParser as Parser
+os.environ['OPENAI_API_KEY'] = OPENAPI_KEY
 
-st.title("DAMAC Conversation AI Bot")
+def data_creation():
+    audio_files = [osp.join(AUDIO_FILES_DIR,fname) for fname in os.listdir(AUDIO_FILES_DIR)]
+    data_orchestrator = DataOrchestrator()
+    text_docments = data_orchestrator.process_records(audio_files[:1])
+    IngestionToVectorDb()
 
-cnf_path = '/mnt/e/Personal/Samarth/repository/DMAC_ChatGPT/conf/conf.cnf'
-parser = Parser(cnf_path)
+def main(args):
+    if args.data_creation:
+        data_creation()
+    if args.create_vector():
+        if osp.isfile(DOCUMENT_OUT_PATH):
+            IngestionToVectorDb()
 
-if "user_prompt_history" not in st.session_state:
-    st.session_state["user_prompt_history"] = []
-if "chat_history" not in st.session_state:
-    st.session_state['chat_history'] = []
-if "chat_answers_history" not in st.session_state:
-    st.session_state["chat_answers_history"] = []
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Run a conversational bot')
+    parser.add_argument('--data_creation',action='store_true',default=None,help='Read Audio data (url/file) and create embeddings')
+    parser.add_argument('--create_vector',action='store_true',default=None,help = 'Ingest vector Embeddings')
+    parser.add_argument('--run_app',action='store_true',default=None,help='run application')
+    parser.add_argument('--openapi_key',default='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',help='required API KEY')
+    parser.add_argument('--run',default=)
 
-with st.form(key='prompt', clear_on_submit=True):
-    prompt = st.text_input("Prompt", placeholder="Enter Your prompt here ...", key="1")
-    submit_button = st.form_submit_button("Submit")
-    reset_button = st.form_submit_button("Reset")
-    if submit_button:
-        with st.spinner("Generating Response ..."):
-            generated_response = run_llm(query=prompt,
-                                         vector_store=parser.get_vectorstore_attributes()['local_vector_store'],
-                                         chat_history=st.session_state["chat_history"],
-                                         embedding_model=parser.get_vectorstore_attributes()['embedding']
-                                         )
+    args = parser.parse_args()
+    main(args)
 
-            formatted_response = f"{generated_response['answer']} \n\n"
-            st.session_state["user_prompt_history"].append(prompt)
-            st.session_state["chat_answers_history"].append(formatted_response)
-            st.session_state["chat_history"].append((prompt, generated_response['answer']))
-
-        if st.session_state["chat_answers_history"]:
-            for generated_response, user_query in zip(st.session_state["chat_answers_history"],
-                                                      st.session_state["user_prompt_history"], ):
-                message(user_query, is_user=True)
-                message(generated_response)
-    if reset_button:
-        st.session_state["user_prompt_history"] = []
-        st.session_state["chat_answers_history"] = []
-        st.session_state["chat_history"] = []
-        st.session_state["user_prompt_history"] = []
-        st.session_state["chat_answers_history"] = []

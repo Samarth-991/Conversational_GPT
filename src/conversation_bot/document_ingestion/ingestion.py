@@ -4,8 +4,8 @@ import os
 from langchain.document_loaders import JSONLoader
 from langchain.text_splitter import CharacterTextSplitter
 
-from src.conversation_bot.signal_handler.process_signal import ConfigParser as Parser
-from src.conversation_bot.utils.embedder_model import HuggingFaceEmbeddings
+from signal_handler.constant import DOCUMENT_OUT_PATH,LOCAL_VECTOR_DB,EMBEDDING
+from utils.embedder_model import HuggingFaceEmbeddings
 
 """
 from langchain.vectorstores import Pinecone
@@ -18,13 +18,15 @@ pinecone.init(
 
 
 class IngestionToVectorDb:
-    def __init__(self, config, chunk_size=500, overlap=0, embedding='huggingface', out_path='vector_db'):
-        self.parser = Parser(config)
+    def __init__(self,chunk_size=500, overlap=0, embedding='huggingface', out_path='vector_db'):
         self.chunk_size = chunk_size
         self.overlap = overlap
-        self.data_path = self.parser.get_records()['out_path']
-        self.vector_store = self.parser.get_vectorstore_attributes()['local_vector_store']
-        self.word_embedder = self.parser.get_vectorstore_attributes()['embedding']
+        self.data_path = DOCUMENT_OUT_PATH
+        self.vector_store = LOCAL_VECTOR_DB
+        self.word_embedder = EMBEDDING
+
+        if not os.path.isfile(self.data_path):
+            raise ("error in reading documents data..")
 
         if self.word_embedder == 'openai':
             from langchain.embeddings.openai import OpenAIEmbeddings

@@ -1,0 +1,18 @@
+[general]
+openapi_key = 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
+base_path = /mnt/e/Personal/Samarth/repository/DMAC_ChatGPT/
+audio_path = data/Audio
+document_output = data/Processed_data/audio_data.json
+
+
+[vector_store]
+vector_store_api = faiss
+embedding = openai
+local_vectorstore_dir = data/Processed_data/
+vector_embedding_index = faiss_damac_audio_data
+
+[audio]
+whisper_model = small
+translate = en
+device = cuda
+

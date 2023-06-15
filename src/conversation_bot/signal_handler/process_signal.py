@@ -16,7 +16,8 @@ class ConfigParser:
         return dict(self.__config.items('vector_store'))
 
     def get_audio_attributes(self):
-        return dict(self.__config.items('audio'))
+        data = dict(self.__config.items('audio'))
+        return data
 
     def get_text_attributes(self):
         return dict(self.__config.items('text'))
