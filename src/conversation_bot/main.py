@@ -4,7 +4,6 @@ import logging
 from signal_handler.constant import AUDIO_FILES_DIR ,DOCUMENT_OUT_PATH,OPENAPI_KEY
 from data_orchestrator.data_processing import DataOrchestrator
 from document_ingestion.ingestion import IngestionToVectorDb
-from app import app
 import argparse
 
 os.environ['OPENAI_API_KEY'] = OPENAPI_KEY
@@ -12,7 +11,7 @@ os.environ['OPENAI_API_KEY'] = OPENAPI_KEY
 def data_creation():
     audio_files = [osp.join(AUDIO_FILES_DIR,fname) for fname in os.listdir(AUDIO_FILES_DIR)]
     data_orchestrator = DataOrchestrator()
-    text_docments = data_orchestrator.process_records(audio_files[:1])
+    text_docments = data_orchestrator.process_records(audio_files)
     IngestionToVectorDb()
 
 def main(args):
