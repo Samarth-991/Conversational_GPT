@@ -1,6 +1,6 @@
 [general]
-openapi_key = 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
-base_path = /mnt/e/Personal/Samarth/repository/Conversational_GPT
+openapi_key = <give your open api key>
+base_path = <give base path to project folder>
 audio_path = data/Audio
 document_output = data/Processed_data/audio_data.json
 
