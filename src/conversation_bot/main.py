@@ -23,12 +23,12 @@ def main(args):
             IngestionToVectorDb()
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Run a conversational bot')
+    parser = argparse.ArgumentParser(description='Run a conversational bot\nTo create vector embeddings run python main.py --data_creation')
     parser.add_argument('--data_creation',action='store_true',default=None,help='Read Audio data (url/file) and create embeddings')
     parser.add_argument('--create_vector',action='store_true',default=None,help = 'Ingest vector Embeddings')
     parser.add_argument('--run_app',action='store_true',default=None,help='run application')
     parser.add_argument('--openapi_key',default='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',help='required API KEY')
-    parser.add_argument('--run',default=)
+    parser.add_argument('--run',default=None,help='Export STREAMLIT PATH and then run')
 
     args = parser.parse_args()
     main(args)
