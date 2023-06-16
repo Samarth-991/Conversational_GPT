@@ -5,8 +5,7 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.vectorstores import FAISS
 from typing import Any
 from langchain.prompts import PromptTemplate
-
-from utils.embedder_model import HuggingFaceEmbeddings
+from langchain.embeddings.openai import OpenAIEmbeddings
 from typing import List, Dict
 
 os.environ['OPENAI_API_KEY'] = "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"
@@ -15,8 +14,8 @@ os.environ['OPENAI_API_KEY'] = "sk-bqOgfuRehdOpfQRBuPebT3BlbkFJemliU2FPoYIIf402f
 def create_prompt():
     prompt_template = """
     Analyze conversations between customer and sales person from context.
-    If customer is looking for services or property he is potential lead else not interested. 
-    Use the context (delimited by <ctx></ctx>) and  chat history (delimited by <hs></hs>)to answer with customer names.
+    If customer is looking for services or property he can be lead and provide us buisness. 
+    Use the context (delimited by <ctx></ctx>) with chat history (delimited by <hs></hs>)to answer with customer names.
     If you don't know the answer, just say No idea.
     <ctx>
     {context}
@@ -32,11 +31,8 @@ def create_prompt():
 
 
 def run_llm(query: str, embedding_model='openai', vector_store='', chat_history: List[Dict[str, Any]] = []) -> Any:
-    if embedding_model == 'openai':
-        from langchain.embeddings.openai import OpenAIEmbeddings
-        embeddings = OpenAIEmbeddings()
-    else:
-        embeddings = HuggingFaceEmbeddings()
+
+    embeddings = OpenAIEmbeddings()
     docsearch = FAISS.load_local(vector_store, embeddings=embeddings)
     prompt = create_prompt()
     chat = ChatOpenAI(verbose=True, temperature=0)

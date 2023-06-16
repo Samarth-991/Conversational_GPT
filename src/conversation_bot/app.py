@@ -30,12 +30,13 @@ with st.form(key='prompt', clear_on_submit=True):
             formatted_response = f"{generated_response['answer']} \n\n"
             st.session_state["user_prompt_history"].append(prompt)
             st.session_state["chat_answers_history"].append(formatted_response)
-            st.session_state["chat_history"].append((prompt, generated_response['answer']))
+            st.session_state["chat_history"] = []
+            # st.session_state["chat_history"].append((prompt, generated_response['answer']))
 
         if st.session_state["chat_answers_history"]:
             for generated_response, user_query in zip(st.session_state["chat_answers_history"],
                                                       st.session_state["user_prompt_history"], ):
-                message(user_query, is_user=True,key=np.random.randint(1,50))
+                message(user_query, is_user=True,key=np.random.randint(5,50))
                 message(generated_response,key=np.random.randint(50,100))
 
 col1, col2 = st.columns(2)

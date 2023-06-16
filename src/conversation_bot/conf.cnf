@@ -1,8 +1,8 @@
 [general]
-openapi_key =
-base_path = /Conversational_GPT
+openapi_key = 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
+base_path = /mnt/e/Personal/Samarth/repository/Conversational_GPT
 audio_path = data/Audio
-document_output = data/Processed_data/audio_data.json
+document_output = data/Processed_data/Audio_data.json
 
 
 [vector_store]
@@ -17,6 +17,6 @@ translate = en
 device = cuda
 
 [APP]
-streamlit_path = <path to environment>/envs/pylangchain/bin/streamlit
+streamlit_path =/home/samartht/anaconda3/envs/pylangchain/bin/streamlit
 
 

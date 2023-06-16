@@ -32,19 +32,24 @@ class AudioProcess:
                     relationship manager name. Usually relationship manager asks customer if he is looking for
                     services or property and customer replies either yes or no.
                     Answer in JSON format with keys customer_name and representative_name only.If not sure mention ""
-                     
                     """
         summary_prompt_template = PromptTemplate(template=summary_template, input_variables=["information"])
         llm = ChatOpenAI(temperature=1, model_name="gpt-3.5-turbo")
 
         chain = LLMChain(llm=llm, prompt=summary_prompt_template)
         answer = chain.run(information=text_data)
-        return json.loads(answer)
+        try:
+            answer = json.loads(answer)
+        except EncodingWarning as err:
+            logging.error("Open AI send multiple answers")
+            answer = {"customer_name":"","representative_name":""}
+        return answer
 
     def speech_to_text(self, audio_path):
         try:
             audio = whisper.load_audio(audio_path)
-        except:
+        except IOError as err:
+            logging.error("{}".format(err))
             raise "Issue in loading audio file. If path is correct try sudo apt-get install ffmpeg"
         audio_language, conv_info = self.get_info(audio)
         if audio_language == 'en':

@@ -24,22 +24,17 @@ class DataOrchestrator:
     def process_records(self, records_list):
         self.conversation_dict['data'] = list()
         for audio_path in tqdm(records_list):
-            dir_path = os.path.dirname(audio_path)
-            filename = os.path.basename(audio_path)
-            json_file = os.path.join(dir_path,filename[:-3]+'json')
-            if not os.path.isfile(json_file):
-                if "http://" in audio_path:
-                    r = requests.get(audio_path)
-                    if r.status_code == 200:
-                        self.process_audio(audio_path)
-                    else:
-                        logging.error("Unable to reach for URL {}".format(audio_path))
-                        continue
-                else:
+            if "http://" in audio_path:
+                r = requests.get(audio_path)
+                if r.status_code == 200:
                     self.process_audio(audio_path)
-                self.save_record(record=self.conversation_dict,out_path=json_file)
-
-        self.save_record(record=self.conversation_dict, out_path=self.out_path)
+                else:
+                    logging.error("Unable to reach for URL {}".format(audio_path))
+                    continue
+            else:
+                self.process_audio(audio_path)
+            print(self.conversation_dict)
+            self.save_record(record=self.conversation_dict, out_path=self.out_path)
         return self.out_path
 
     def process_audio(self, audio_path):
