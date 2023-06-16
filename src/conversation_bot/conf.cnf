@@ -2,11 +2,10 @@
 base_path = /mnt/e/Personal/Samarth/repository/Conversational_GPT
 audio_path = data/Audio
 document_output = data/Processed_data/Audio_data.json
-chat_history = 0
 
 [vector_store]
 vector_store_api = faiss
-embedding = openai
+embedding = huggigface
 local_vectorstore_dir = data/Processed_data/
 vector_embedding_index = faiss_damac_audio_data
 

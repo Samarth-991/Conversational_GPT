@@ -1,10 +1,9 @@
 import logging
 import os
-from dotenv import load_dotenv
 import os.path as osp
 from signal_handler.constant import AUDIO_FILES_DIR, DOCUMENT_OUT_PATH, STREAMLIT_PATH
 import argparse
-load_dotenv()
+
 
 def data_creation():
     try:
@@ -25,6 +24,7 @@ def main(args):
         try:
             from document_ingestion.ingestion import IngestionToVectorDb
             if osp.isfile(DOCUMENT_OUT_PATH):
+                print("creating vector from file {}".format(DOCUMENT_OUT_PATH))
                 IngestionToVectorDb()
         except ImportError as err:
             logging.error("Import error :{}".format(err))

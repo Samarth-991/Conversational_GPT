@@ -4,8 +4,10 @@ import os
 from langchain.document_loaders import JSONLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
-from signal_handler.constant import DOCUMENT_OUT_PATH,LOCAL_VECTOR_DB,EMBEDDING
+from signal_handler.constant import DOCUMENT_OUT_PATH,LOCAL_VECTOR_DB,EMBEDDING,OPENAI_API_KEY
 from utils.embedder_model import HuggingFaceEmbeddings
+
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 """
 from langchain.vectorstores import Pinecone
@@ -18,7 +20,7 @@ pinecone.init(
 
 
 class IngestionToVectorDb:
-    def __init__(self,chunk_size=500, overlap=0, embedding='huggingface', out_path='vector_db'):
+    def __init__(self,chunk_size=1000, overlap=50, embedding='huggingface', out_path='vector_db'):
         self.chunk_size = chunk_size
         self.overlap = overlap
         self.data_path = DOCUMENT_OUT_PATH
@@ -54,10 +56,10 @@ class IngestionToVectorDb:
         return vectorstore
 
     @staticmethod
-    def data_loader(tmp_path, chunk_size=100, overlap=0):
+    def data_loader(tmp_path, chunk_size=1000, overlap=0):
         def metadata_func(record: dict, metadata: dict) -> dict:
             metadata['customer'] = record.get('customer')
-            metadata['language'] = record.get('date')
+            metadata['language'] = record.get('language')
             metadata['duration'] = record.get('call duration')
             return metadata
 
@@ -79,7 +81,3 @@ class IngestionToVectorDb:
             json.dump(record, fc, indent=4)
         return 0
 
-
-if __name__ == '__main__':
-    cnf_path = "/mnt/e/Personal/Samarth/repository/DMAC_ChatGPT/conf/conf.cnf"
-    IngestionToVectorDb(config=cnf_path)

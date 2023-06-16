@@ -1,13 +1,16 @@
 import os
 import os.path as osp
 from signal_handler.process_signal import ConfigParser as Parser
+from dotenv import load_dotenv
 
 configparser = Parser("conf.cnf")
+load_dotenv('.env')
+
 ## GENERAL CONFIG
 BASE_PATH = configparser.get_general_attributes()['base_path']
 AUDIO_FILES_DIR = osp.join(BASE_PATH,configparser.get_general_attributes()['audio_path'])
 DOCUMENT_OUT_PATH = osp.join(BASE_PATH,configparser.get_general_attributes()['document_output'])
-CHAT_HISTORY = configparser.get_general_attributes()['chat_history']
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 ## MODEL ATTRIBUTES
 WHISPER_MODEL = configparser.get_audio_attributes()['whisper_model']
