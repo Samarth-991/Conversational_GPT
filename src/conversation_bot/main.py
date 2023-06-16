@@ -45,7 +45,7 @@ if __name__ == '__main__':
     parser.add_argument('--create_vector', action='store_true', default=None, help='Ingest vector Embeddings')
     parser.add_argument('--app', action='store_true', default=None, help='run application')
     parser.add_argument('--openapi_key', default=None, help='required API KEY')
-    parser.add_argument('--port',default='80',help="port number ")
+    parser.add_argument('--port',default='8080',help="port number ")
 
     args = parser.parse_args()
     main(args)
