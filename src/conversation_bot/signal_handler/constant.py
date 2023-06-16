@@ -2,7 +2,6 @@ import os
 import os.path as osp
 from signal_handler.process_signal import ConfigParser as Parser
 
-
 configparser = Parser("conf.cnf")
 ## GENERAL CONFIG
 BASE_PATH = configparser.get_general_attributes()['base_path']
@@ -12,9 +11,6 @@ DOCUMENT_OUT_PATH = osp.join(BASE_PATH,configparser.get_general_attributes()['do
 ## MODEL ATTRIBUTES
 WHISPER_MODEL = configparser.get_audio_attributes()['whisper_model']
 DEVICE = configparser.get_audio_attributes()['device']
-
-## OPEN API KEY
-OPENAPI_KEY = configparser.get_general_attributes()['openapi_key']
 
 ## Vector Store attributes
 VECTOR_STORE_API = configparser.get_vectorstore_attributes()['vector_store_api']

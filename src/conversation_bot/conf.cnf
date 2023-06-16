@@ -1,13 +1,12 @@
 [general]
-openapi_key =
-base_path = /Conversational_GPT
+base_path = /mnt/e/Personal/Samarth/repository/Conversational_GPT
 audio_path = data/Audio
 document_output = data/Processed_data/Audio_data.json
 
 
 [vector_store]
 vector_store_api = faiss
-embedding = openai
+embedding = hugging_face
 local_vectorstore_dir = data/Processed_data/
 vector_embedding_index = faiss_damac_audio_data
 
