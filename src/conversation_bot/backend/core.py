@@ -5,7 +5,9 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.vectorstores import FAISS
 from typing import Any
 from langchain.prompts import PromptTemplate
+from signal_handler.constant import EMBEDDING
 from langchain.embeddings.openai import OpenAIEmbeddings
+from utils.embedder_model import HuggingFaceEmbeddings
 from typing import List, Dict
 
 os.environ['OPENAI_API_KEY'] = "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"
@@ -13,16 +15,14 @@ os.environ['OPENAI_API_KEY'] = "sk-bqOgfuRehdOpfQRBuPebT3BlbkFJemliU2FPoYIIf402f
 
 def create_prompt():
     prompt_template = """
-    Analyze conversations between customer and sales person from context.
-    If customer is looking for services or property he can be lead and provide us buisness. 
-    Use the context (delimited by <ctx></ctx>) with chat history (delimited by <hs></hs>)to answer with customer names.
-    If you don't know the answer, just say No idea.
-    <ctx>
+    Analyze conversations from context.
+    If customer is looking for services or property he can be potential lead. 
+    Use the context with chat history to answer with customer names.Don't make up answers
+   
     {context}
-    </ctx>
-    <hs>
+   
     {chat_history}
-    </hs>
+   
     Question: {question}
     Answer stepwise: 
     """
@@ -32,7 +32,10 @@ def create_prompt():
 
 def run_llm(query: str, embedding_model='openai', vector_store='', chat_history: List[Dict[str, Any]] = []) -> Any:
 
-    embeddings = OpenAIEmbeddings()
+    if embedding_model == 'open_ai':
+        embeddings = OpenAIEmbeddings()
+    else:
+        embeddings = HuggingFaceEmbeddings()
     docsearch = FAISS.load_local(vector_store, embeddings=embeddings)
     prompt = create_prompt()
     chat = ChatOpenAI(verbose=True, temperature=0)
@@ -40,6 +43,7 @@ def run_llm(query: str, embedding_model='openai', vector_store='', chat_history:
     qa = ConversationalRetrievalChain.from_llm(llm=chat,
                                                retriever=docsearch.as_retriever(),
                                                combine_docs_chain_kwargs={"prompt": prompt},
+                                               max_tokens_limit=4097
                                                )
     return qa({"question": query, "chat_history": chat_history})
 

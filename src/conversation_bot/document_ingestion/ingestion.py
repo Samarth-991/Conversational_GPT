@@ -3,7 +3,7 @@ import os
 
 from langchain.document_loaders import JSONLoader
 from langchain.text_splitter import CharacterTextSplitter
-
+from langchain.embeddings.openai import OpenAIEmbeddings
 from signal_handler.constant import DOCUMENT_OUT_PATH,LOCAL_VECTOR_DB,EMBEDDING
 from utils.embedder_model import HuggingFaceEmbeddings
 
@@ -29,9 +29,10 @@ class IngestionToVectorDb:
             raise ("error in reading documents data..")
 
         if self.word_embedder == 'openai':
-            from langchain.embeddings.openai import OpenAIEmbeddings
+            print("Using Open AI vector embeddings")
             self.embeddings = OpenAIEmbeddings()
         else:
+            print("Using Hugging face vector embeddings")
             self.embeddings = HuggingFaceEmbeddings()
         self.conversation_dict = dict()
         self.ingestion()

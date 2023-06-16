@@ -1,13 +1,10 @@
 import logging
 import os
+from dotenv import load_dotenv
 import os.path as osp
-from signal_handler.constant import AUDIO_FILES_DIR, DOCUMENT_OUT_PATH, OPENAPI_KEY, STREAMLIT_PATH
-
-
+from signal_handler.constant import AUDIO_FILES_DIR, DOCUMENT_OUT_PATH, STREAMLIT_PATH
 import argparse
-
-os.environ['OPENAI_API_KEY'] = OPENAPI_KEY
-
+load_dotenv()
 
 def data_creation():
     try:
