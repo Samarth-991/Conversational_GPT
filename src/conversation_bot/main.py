@@ -31,7 +31,7 @@ def main(args):
 
     if args.app:
         os.environ["STREAMLIT_PATH"] = STREAMLIT_PATH
-        os.system("{} run app.py --server.port {}".format(STREAMLIT_PATH,args.port))
+        os.system("{} run app.py --server.port {}".format(STREAMLIT_PATH, args.port))
 
 
 if __name__ == '__main__':
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     parser.add_argument('--create_vector', action='store_true', default=None, help='Ingest vector Embeddings')
     parser.add_argument('--app', action='store_true', default=None, help='run application')
     parser.add_argument('--openapi_key', default=None, help='required API KEY')
-    parser.add_argument('--port',default='8080',help="port number ")
+    parser.add_argument('--port', default='8080', help="port number ")
 
     args = parser.parse_args()
     main(args)

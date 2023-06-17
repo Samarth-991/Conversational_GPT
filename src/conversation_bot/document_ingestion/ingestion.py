@@ -32,7 +32,7 @@ class IngestionToVectorDb:
 
         if self.word_embedder == 'openai':
             print("Using Open AI vector embeddings")
-            self.embeddings = OpenAIEmbeddings()
+            self.embeddings = OpenAIEmbeddings(chunk_size=1000)
         else:
             print("Using Hugging face vector embeddings")
             self.embeddings = HuggingFaceEmbeddings()
@@ -50,7 +50,7 @@ class IngestionToVectorDb:
         vectorstore = None
         try:
             from langchain.vectorstores import FAISS
-            vectorstore = FAISS.from_documents(documents=docs, embedding=embedding)
+            vectorstore = FAISS.from_documents(documents=docs, embedding=embedding,)
         except ImportError as err:
             raise ("{} no module FAISS found. use pip install faiss".format(err))
         return vectorstore

@@ -6,8 +6,8 @@ document_output = data/Processed_data/Audio_data.json
 [vector_store]
 vector_store_api = faiss
 embedding = huggigface
-local_vectorstore_dir = data/Processed_data/
-vector_embedding_index = faiss_damac_audio_data
+local_vectorstore_dir = vector_embeddings
+vector_embedding_index = faiss_damac_audio_data_hugging_face
 
 [audio]
 whisper_model = small
