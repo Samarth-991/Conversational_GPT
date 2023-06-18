@@ -7,4 +7,6 @@ The Repo objective was for the companies who are having a database of conversati
 ### Project Pipleine 
 ![Image text](https://github.com/Samarth-991/Conversational_GPT/blob/main/pipeline.png)
 
-### 
+### Word Embeddings - openAI vs Huggingface
+The project is build in such a way that it can be used with and witout the OpenAI key to create Vector database . Use either of  OpenAI vector Embeddings or Hugging face vector embeddings to create Vector DB and store into local FAISS vector database . 
+ 
