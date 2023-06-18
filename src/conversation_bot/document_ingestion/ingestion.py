@@ -4,9 +4,11 @@ import os
 from langchain.document_loaders import JSONLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
-from signal_handler.constant import DOCUMENT_OUT_PATH,LOCAL_VECTOR_DB,EMBEDDING,OPENAI_API_KEY
+from signal_handler.constant import DOCUMENT_OUT_PATH, LOCAL_VECTOR_DB, EMBEDDING, OPENAI_API_KEY
 from utils.embedder_model import HuggingFaceEmbeddings
+from utils.common import create_logger
 
+log = create_logger
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 """
@@ -20,21 +22,22 @@ pinecone.init(
 
 
 class IngestionToVectorDb:
-    def __init__(self,chunk_size=1000, overlap=50, embedding='huggingface', out_path='vector_db'):
+    def __init__(self, chunk_size=1000, overlap=50, embedding='huggingface', out_path='vector_db'):
         self.chunk_size = chunk_size
         self.overlap = overlap
         self.data_path = DOCUMENT_OUT_PATH
         self.vector_store = LOCAL_VECTOR_DB
         self.word_embedder = EMBEDDING
-
+        log.info("Parameter list ..\nchunk Size:{}\nOverlap:{}\nEmbedder:{}".format(self.chunk_size, self.overlap,
+                                                                                    self.word_embedder))
         if not os.path.isfile(self.data_path):
             raise ("error in reading documents data..")
 
         if self.word_embedder == 'openai':
-            print("Using Open AI vector embeddings")
+            log.info("Using Open AI vector embeddings")
             self.embeddings = OpenAIEmbeddings(chunk_size=1000)
         else:
-            print("Using Hugging face vector embeddings")
+            log.info("Using Hugging face vector embeddings")
             self.embeddings = HuggingFaceEmbeddings()
         self.conversation_dict = dict()
         self.ingestion()
@@ -50,7 +53,7 @@ class IngestionToVectorDb:
         vectorstore = None
         try:
             from langchain.vectorstores import FAISS
-            vectorstore = FAISS.from_documents(documents=docs, embedding=embedding,)
+            vectorstore = FAISS.from_documents(documents=docs, embedding=embedding, )
         except ImportError as err:
             raise ("{} no module FAISS found. use pip install faiss".format(err))
         return vectorstore
@@ -80,4 +83,3 @@ class IngestionToVectorDb:
         with open(out_path, 'w+') as fc:
             json.dump(record, fc, indent=4)
         return 0
-

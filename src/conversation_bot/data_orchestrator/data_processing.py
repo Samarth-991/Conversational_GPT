@@ -1,17 +1,16 @@
-import os
 import json
-import requests
-from tqdm import tqdm
-import pandas as pd
-import re
 import logging
+import re
 
+import pandas as pd
+import requests
+from signal_handler.constant import WHISPER_MODEL, DEVICE, DOCUMENT_OUT_PATH
+from tqdm import tqdm
 from utils.audio_to_text import AudioProcess
-from signal_handler.constant import WHISPER_MODEL,DEVICE,DOCUMENT_OUT_PATH
 
 
 class DataOrchestrator:
-    def __init__(self, min_call_duration_in_seconds = 100):
+    def __init__(self, min_call_duration_in_seconds=100):
         self.conversation_dict = dict()
         self.whisper_model_name = WHISPER_MODEL
         self.device = DEVICE
@@ -33,7 +32,6 @@ class DataOrchestrator:
                     continue
             else:
                 self.process_audio(audio_path)
-            print(self.conversation_dict)
             self.save_record(record=self.conversation_dict, out_path=self.out_path)
         return self.out_path
 
@@ -56,7 +54,6 @@ class DataOrchestrator:
 
     @staticmethod
     def read_data(file_path, customer_index_col='Opportunity'):
-        audio_files = []
         excel_df = pd.read_excel(file_path)
         excel_df.dropna(subset=customer_index_col, inplace=True)
         return excel_df
@@ -66,10 +63,3 @@ class DataOrchestrator:
         with open(out_path, 'w+') as fc:
             json.dump(record, fc, indent=4)
         return 0
-
-
-if __name__ == '__main__':
-    print(os.getenv('BASE_PATH'))
-    #data_orchestrator = DataOrchestrator(cnf_path="/mnt/e/Personal/Samarth/repository/DMAC_ChatGPT/conf/conf.cnf")
-
-    #data_orchestrator.process_records(audio_files)

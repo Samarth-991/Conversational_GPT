@@ -32,7 +32,6 @@ def run_llm(query: str, embedding_model='openai', vector_store='', chat_history:
         embeddings = OpenAIEmbeddings()
     else:
         embeddings = HuggingFaceEmbeddings()
-    print("Vector store path ",vector_store)
     docsearch = FAISS.load_local(vector_store, embeddings=embeddings)
     prompt = create_prompt()
     chat = ChatOpenAI(verbose=True, temperature=0)
