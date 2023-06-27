@@ -5,7 +5,6 @@ from signal_handler.constant import AUDIO_FILES_DIR, DOCUMENT_OUT_PATH, STREAMLI
 import argparse
 
 
-
 def data_creation():
     try:
         from data_orchestrator.data_processing import DataOrchestrator
