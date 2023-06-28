@@ -7,7 +7,7 @@ from tenacity import retry, wait_random
 import openai
 import requests
 import time
-# os.environ['OPENAI_API_KEY'] = "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"
+# os.environ['OPENAI_API_KEY'] = "sk-<API KEY>"
 
 class WHISPERModel:
     def __init__(self, model_name='small', device='cuda',openai_flag=False):
