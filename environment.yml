@@ -366,4 +366,5 @@ dependencies:
     - wisper==1.0.0
     - xformers==0.0.20
     - yarl==1.9.2
+    - -r requirements.txt
 prefix: /home/samartht/anaconda3/envs/pylangchain
