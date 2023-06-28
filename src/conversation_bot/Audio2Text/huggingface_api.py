@@ -11,25 +11,27 @@ import huggingface_hub
 import soundfile as sf
 import io
 from urllib.request import urlopen
-
-nltk.download('punkt')
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
-# os.environ['OPENAI_API_KEY'] = "sk-<>"
-os.environ['HUGGINGFACEHUB_API_TOKEN'] = ''
+nltk.download('punkt')
+TMP_PATH = 'tmp.wav'
+WAV2VEC_MODEL = 'facebook/s2t-wav2vec2-large-en-ar'
+NLLB_MODEL = 'facebook/nllb-200-distilled-600M'
 
-huggingface_hub.login(token=os.getenv('HUGGINGFACEHUB_API_TOKEN'))
+os.environ['HUGGINGFACEHUB_API_TOKEN'] = ''
+huggingface_hub.login(token=os.getenv('HUGGINGFACEHUB_API_TOKEN'), add_to_git_credential=False)
 
 
 def load_audio(audio_url):
     """Load the audio file & convert to 16,000 sampling rate"""
-    speech, fs = sf.read(io.BytesIO(urlopen(url).read()))
+    speech, fs = sf.read(io.BytesIO(urlopen(audio_url).read()))
     if len(speech.shape) > 1:
         speech = speech[:, 0] + speech[:, 1]
     if fs != 16000:
         speech = librosa.resample(speech, orig_sr=fs, target_sr=16000)
     duration = speech.shape[0] / 16000
-    sf.write("tmp.wav", speech, 16000)
+
+    sf.write(TMP_PATH, speech, 16000)
     time.sleep(1)
     return speech, duration
 
@@ -75,21 +77,21 @@ def get_transcription(audio_path, model, processor, device='cpu', n_seconds=30):
     return " ".join(translated_text), " ".join(predicted_text)
 
 
-def translate_text(text_data, model_name="facebook/nllb-200-distilled-600M", src_lang='arabic'):
+def translate_text(text_data, model_name=NLLB_MODEL, src_lang='arabic'):
     tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=True, src_lang=src_lang)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name, use_auth_token=True)
     inputs = tokenizer(text_data, return_tensors="pt")
-    translated_tokens = model.generate(**inputs, max_length=1024,
+    translated_tokens = model.generate(**inputs, max_length=4096,
                                        forced_bos_token_id=tokenizer.lang_code_to_id["eng_Latn"])
     translated_text = tokenizer.batch_decode(translated_tokens, skip_special_tokens=True)[0]
     return translated_text
 
 
 # arabic model facebook/s2t-wav2vec2-large-en-ar
-def speech_to_text(audio_path, model_name='facebook/wav2vec2-base-960h'):
+def speech_to_text(audio_path, model_name=WAV2VEC_MODEL):
     logger = create_logger()
     logger.info("Processing {}".format(audio_path))
-    translator = Translator()
+
     transcription = dict()
     # device = "cuda" if th.cuda.is_available() else "cpu"
     device = "cpu"
@@ -120,5 +122,4 @@ def create_logger():
 if __name__ == '__main__':
     url = "https://prypto-api.aswat.co/surveillance/recordings/5a0e3bd9-f603-45b8-a086-8c38be251a73.mp3.mp3"
     text = speech_to_text(audio_path=url, model_name='facebook/s2t-wav2vec2-large-en-ar')
-
-    print(text['text'])
+    print(text['translated'])
