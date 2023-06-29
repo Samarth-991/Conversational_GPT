@@ -12,7 +12,7 @@ import io
 from urllib.request import urlopen
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 import nltk
-nltk.download('punkt')
+# nltk.download('punkt')
 
 WAV2VEC_MODEL = 'facebook/s2t-wav2vec2-large-en-ar'
 NLLB_MODEL = 'facebook/nllb-200-distilled-600M'
