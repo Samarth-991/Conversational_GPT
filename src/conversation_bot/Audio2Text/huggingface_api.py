@@ -3,21 +3,20 @@ import time
 
 import torch as th
 from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
-import nltk
+
 import re
-import logging
 import librosa
 import huggingface_hub
 import soundfile as sf
 import io
 from urllib.request import urlopen
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
-
+import nltk
 nltk.download('punkt')
-TMP_PATH = 'tmp.wav'
+
 WAV2VEC_MODEL = 'facebook/s2t-wav2vec2-large-en-ar'
 NLLB_MODEL = 'facebook/nllb-200-distilled-600M'
-
+TMP_PATH = 'tmp.wav'
 os.environ['HUGGINGFACEHUB_API_TOKEN'] = ''
 huggingface_hub.login(token=os.getenv('HUGGINGFACEHUB_API_TOKEN'), add_to_git_credential=False)
 
@@ -48,7 +47,7 @@ def run_inference(speech_clip, model, processor, device='cpu'):
     logits = model(input_features)["logits"]
     predicted_ids = th.argmax(logits, dim=-1)
     transcription = processor.batch_decode(predicted_ids)[0]
-    return " ".join(correct_sentences(transcription))
+    return transcription
 
 
 def get_transcription(audio_path, model, processor, device='cpu', n_seconds=30):
@@ -89,8 +88,7 @@ def translate_text(text_data, model_name=NLLB_MODEL, src_lang='arabic'):
 
 # arabic model facebook/s2t-wav2vec2-large-en-ar
 def speech_to_text(audio_path, model_name=WAV2VEC_MODEL):
-    logger = create_logger()
-    logger.info("Processing {}".format(audio_path))
+    print("Processing {}".format(audio_path))
 
     transcription = dict()
     # device = "cuda" if th.cuda.is_available() else "cpu"
@@ -100,23 +98,7 @@ def speech_to_text(audio_path, model_name=WAV2VEC_MODEL):
     transcription['translated'], transcription['text'] = get_transcription(audio_path, model=wav2vec2_model,
                                                                            processor=wav2vec2_processor,
                                                                            device=device)
-
     return transcription
-
-
-def create_logger():
-    formatter = logging.Formatter('%(asctime)s:%(levelname)s:- %(message)s')
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(formatter)
-
-    logger = logging.getLogger("APT_Realignment")
-    logger.setLevel(logging.INFO)
-
-    if not logger.hasHandlers():
-        logger.addHandler(console_handler)
-    logger.propagate = False
-    return logger
 
 
 if __name__ == '__main__':
