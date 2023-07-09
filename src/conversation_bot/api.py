@@ -38,7 +38,7 @@ async def whisper(req: RequestBody) -> ResponseBody:
         text["id"] = idx + 1
         data.append(text)
     data_dict = {
-        "data" : data
+        "data": data
     }
     return data_dict
 
@@ -51,6 +51,6 @@ async def huggingface(req: RequestBody) -> ResponseBody:
         text["id"] = idx + 1
         data.append(text)
     data_dict = {
-        "data" : data
+        "data": data
     }
     return data_dict
